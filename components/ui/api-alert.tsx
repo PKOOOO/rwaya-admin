@@ -14,7 +14,7 @@ interface ApiAlertProps {
 
 const textMap: Record<ApiAlertProps["variant"], string> = {
   public: "Public",
-  admin: "destructive",
+  admin: "Admin",
 };
 
 const variantMap: Record<ApiAlertProps["variant"], BadgeProps["variant"]> = {
