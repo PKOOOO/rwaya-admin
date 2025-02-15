@@ -11,7 +11,7 @@ export async function POST(
         const { userId } = auth();
         const body = await req.json();
 
-        const { name, billboardId, iconId, iconvalue } = body;
+        const { name, iconvalue } = body;
 
         if (!userId) {
             return new NextResponse("Unauthenticated", { status: 401 });
@@ -21,15 +21,10 @@ export async function POST(
             return new NextResponse("Name is required is required", { status: 400 });
         }
 
-        if(!billboardId) {
-            return new NextResponse("BillboardId is required is required", { status: 400 });
-        }
-        if(!iconId) {
-            return new NextResponse("BillboardId is required is required", { status: 400 });
-        }
         if(!iconvalue) {
-            return new NextResponse("BillboardId is required is required", { status: 400 });
+            return new NextResponse("Value icon is required is required", { status: 400 });
         }
+
         if (!params.storeId) {
             return new NextResponse("Store ID is required is required", { status: 400 });
         }
@@ -45,25 +40,23 @@ export async function POST(
             return new NextResponse("Unauthorized", { status: 403 });
         }
 
-        const category = await prismadb.category.create({
+        const icon = await prismadb.icon.create({
             data: {
                 name,
-                billboardId,
-                iconId,
-                iconvalue: String(iconvalue),
+                iconvalue,
                 storeId: params.storeId
             }
         });
 
-        return NextResponse.json(category);
+        return NextResponse.json(icon);
 
     } catch (error) {
-       console.log('[CATEGORIES_POST]', error);
+       console.log('[ICONS_POST]', error);
        return new NextResponse("Internal error", { status: 500 });
     }   
 };
 
-// getting all the billboards
+// getting all the icons
 
 export async function GET(
     req: Request,
@@ -75,16 +68,16 @@ export async function GET(
             return new NextResponse("Store ID is required is required", { status: 400 });
         }
 
-        const categories = await prismadb.category.findMany({
+        const icons = await prismadb.icon.findMany({
             where: {
                 storeId: params.storeId,
             },
         });
 
-        return NextResponse.json(categories);
+        return NextResponse.json(icons);
 
     } catch (error) {
-       console.log('[CATEGORIES_GET]', error);
+       console.log('[ICONS_GET]', error);
        return new NextResponse("Internal error", { status: 500 });
     }   
 };

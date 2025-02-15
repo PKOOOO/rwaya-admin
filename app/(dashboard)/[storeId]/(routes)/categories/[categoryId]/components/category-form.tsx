@@ -1,24 +1,16 @@
 "use client";
 import * as z from "zod";
-
-import { Billboard, Category } from "@prisma/client";
+import { Billboard, Category, Icon } from "@prisma/client";
+import { IconPreview } from "@/app/(dashboard)/[storeId]/(routes)/icons/[iconId]/components/icon-form";
 import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import axios from "axios";
-
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
@@ -26,8 +18,11 @@ import { AlertModal } from "@/components/modals/alert-modal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const formSchema = z.object({
-  name: z.string().min(1),
-  billboardId: z.string().min(1),
+  name: z.string().min(1, "Name is required."),
+  billboardId: z.string().min(1, "Please select a billboard."),
+  iconId: z.string().min(1, "Please select an icon."),
+  // iconvalue is not part of the schema
+  // but we are managing it separately below
 });
 
 type CategoryFormValues = z.infer<typeof formSchema>;
@@ -35,9 +30,10 @@ type CategoryFormValues = z.infer<typeof formSchema>;
 interface CategoryFormProps {
   initialData: Category | null;
   billboards: Billboard[];
+  icons: Icon[];
 }
 
-export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboards }) => {
+export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboards, icons }) => {
   const params = useParams();
   const router = useRouter();
 
@@ -45,40 +41,65 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboa
   const [loading, setLoading] = useState(false);
 
   const title = initialData ? "Edit category" : "Create category";
-  const description = initialData ? "Edit category" : "Add a new category";
-  const toastMessage = initialData ? "Category updated." : "Category created.";
+  const description = initialData ? "Edit category details" : "Add a new category";
+  const toastMessage = initialData ? "Category updated successfully." : "Category created successfully.";
   const action = initialData ? "Save changes" : "Create";
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
-      name: '',
-      billboardId: '',
-    },
+    defaultValues: initialData
+      ? {
+          name: initialData.name,
+          billboardId: initialData.billboardId,
+          iconId: initialData.iconId,
+        }
+      : {
+          name: "",
+          billboardId: "",
+          iconId: "",
+        },
   });
 
   const onSubmit = async (data: CategoryFormValues) => {
+    console.log('Form submitted with data:', data);
     try {
       setLoading(true);
+      
+      // Find the selected icon to get its iconvalue
+      const selectedIcon = icons.find((icon) => icon.id === data.iconId);
+      
+      if (!selectedIcon) {
+        toast.error("Selected icon is invalid.");
+        return;
+      }
+  
+      // Add iconvalue to the data before sending
+      const categoryData = { 
+        ...data, 
+        iconvalue: selectedIcon.iconvalue 
+      };
+      
       if (initialData) {
         await axios.patch(
           `/api/${params.storeId}/categories/${params.categoryId}`,
-          data
+          categoryData
         );
       } else {
-        await axios.post(`/api/${params.storeId}/categories`, data);
+        await axios.post(`/api/${params.storeId}/categories`, categoryData);
       }
+  
       router.refresh();
       router.push(`/${params.storeId}/categories`);
       toast.success(toastMessage);
     } catch (error) {
-      toast.error("Something went wrong.");
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const onDelete = async () => {
+    if (!params.categoryId) return;
     try {
       setLoading(true);
       await axios.delete(
@@ -86,17 +107,9 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboa
       );
       router.refresh();
       router.push(`/${params.storeId}/categories`);
-      toast.success("Category Deleted", {
-        style: {
-          borderRadius: "10px",
-          background: "#333",
-          color: "#fff",
-        },
-      });
+      toast.success("Category deleted successfully.");
     } catch (error) {
-      toast.error(
-        "Make sure to removed all products using this category."
-      );
+      toast.error("Ensure all products using this category are removed first.");
     } finally {
       setLoading(false);
     }
@@ -139,7 +152,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboa
                   <FormControl>
                     <Input
                       disabled={loading}
-                      placeholder="Category name"
+                      placeholder="Enter category name"
                       {...field}
                     />
                   </FormControl>
@@ -155,25 +168,49 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboa
                   <FormLabel>Billboard</FormLabel>
                   <Select
                     disabled={loading}
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => field.onChange(value)}
                     value={field.value}
-                    defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a billboard"
-                        ></SelectValue>
+                        <SelectValue placeholder="Select a billboard" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {billboards.map((billboard) => (
-                        <SelectItem 
-                          key={billboard.id}
-                          value={billboard.id}
-                        >
+                        <SelectItem key={billboard.id} value={billboard.id}>
                           {billboard.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="iconId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Icon</FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select an icon" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {icons.map((icon) => (
+                        <SelectItem key={icon.id} value={icon.id}>
+                          <div className="flex items-center gap-2">
+                            <IconPreview iconName={icon.iconvalue} />
+                            {icon.name}
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
