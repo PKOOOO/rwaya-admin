@@ -81,3 +81,5 @@ export async function GET(
        return new NextResponse("Internal error", { status: 500 });
     }   
 };
+
+export const runtime = "nodejs"
