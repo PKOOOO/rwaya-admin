@@ -4,8 +4,10 @@ const nextConfig = {
       domains: ["res.cloudinary.com"],
     },
     experimental: {
-      runtime: "nodejs",
-    },
+        serverActions: true, // If you're using Server Actions, keep this
+      },
+      output: "standalone", // Ensures a full Node.js environment
+      runtime: "nodejs", // Enforces Node.js runtime
   };
   
   export default nextConfig;
