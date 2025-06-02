@@ -145,6 +145,7 @@ model Order {
   address String @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  customerEmail String?
 
   @@index([storeId])
 }
