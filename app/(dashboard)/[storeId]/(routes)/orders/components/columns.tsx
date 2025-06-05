@@ -30,7 +30,16 @@ export const columns: ColumnDef<OrderColumn>[] = [
     header: "Total Price",
   },
   {
-    accessorKey: "ispaid",
-    header: "Paid",
-  },
+    accessorKey: "isPaid",
+    header: "Status",
+    cell: ({ row }) => (
+      <span
+        className={`px-2 py-1 rounded text-white text-xs font-medium ${
+          row.getValue("isPaid") ? "bg-green-600" : "bg-red-600"
+        }`}
+      >
+        {row.getValue("isPaid") ? "Paid" : "Unpaid"}
+      </span>
+    )
+  }  
 ];

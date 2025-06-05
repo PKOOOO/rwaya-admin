@@ -19,6 +19,6 @@ app.prepare().then(() => {
 
   server.listen(3000, (err) => {
     if (err) throw err;
-    console.log('> Ready on http://192.168.0.104:3000');
+    console.log('> Ready on http://192.168.13.163:3000');
   });
 });
