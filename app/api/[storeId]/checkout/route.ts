@@ -3,7 +3,7 @@ import paystack from "@/lib/paystack";
 import prismadb from "@/lib/prismadb";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": process.env.FRONTEND_STORE_URL || "http://192.168.13.163:3001",
+  "Access-Control-Allow-Origin": process.env.FRONTEND_STORE_URL || "http://:3001",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
   "Content-Type": "application/json"
@@ -18,7 +18,17 @@ export async function POST(
   { params }: { params: { storeId: string } }
 ) {
   try {
-    const { productIds, customerEmail } = await req.json();
+    const { items, customerEmail } = await req.json();
+
+if (!items?.length) {
+  return new NextResponse(
+    JSON.stringify({ error: "Items are required" }),
+    { status: 400, headers: corsHeaders }
+  );
+}
+
+const productIds = items.map((item: any) => item.id);
+
 
     // Validate inputs
     if (!params.storeId) {
@@ -55,22 +65,29 @@ export async function POST(
     }
 
     // Calculate amount
-    const amount = products.reduce((total, product) => 
-      total + product.price.toNumber() * 100, 0);
+    const amount = products.reduce((total, product) => {
+      const item = items.find((i: any) => i.id === product.id);
+      const quantity = item?.quantity || 1;
+      return total + product.price.toNumber() * quantity * 100;
+    }, 0);
+    
 
     // Create order
-    const order = await prismadb.order.create({
-      data: {
-        storeId: params.storeId,
-        customerEmail,
-        isPaid: false,
-        orderItems: {
-          create: productIds.map((productId: string) => ({
-            product: { connect: { id: productId } }
-          }))
-        }
-      }
-    });
+// Create order
+const order = await prismadb.order.create({
+  data: {
+    storeId: params.storeId,
+    customerEmail,
+    isPaid: false,
+    orderItems: {
+      create: items.map((item: any) => ({
+        product: { connect: { id: item.id } },
+        quantity: item.quantity || 1,
+      })),
+    }
+  }
+});
+
 
     // Initialize Paystack payment
     const paystackResponse = await paystack.initializeTransaction({
