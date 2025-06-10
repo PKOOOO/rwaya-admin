@@ -136,19 +136,36 @@ model Image {
 }
 
 model Order {
-  id String @id @default(uuid())
-  storeId String
-  store Store @relation("StoreToOrder", fields: [storeId], references: [id])
-  orderItems OrderItem[]
-  isPaid Boolean @default(false)
-  phone String @default("")
-  address String @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  customerEmail String?
+  id             String          @id @default(uuid())
+  storeId        String
+  store          Store           @relation("StoreToOrder", fields: [storeId], references: [id])
+  orderItems     OrderItem[]
+  isPaid         Boolean         @default(false)
+  phone          String          @default("")
+  address        String          @default("")
+  customerName   String          @default("")
+  idNumber       String           @default("")
+  county         String          @default("")
+  customerEmail  String?
+  trackingId     String?         @unique
+  trackingUpdates TrackingUpdate[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   @@index([storeId])
 }
+
+model TrackingUpdate {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  status    String   // e.g. "Order Received", "Packed", "Out for Delivery"
+  note      String?  // optional extra note
+  timestamp DateTime @default(now())
+
+  @@index([orderId])
+}
+
 
 model OrderItem {
     id String @id @default(uuid())

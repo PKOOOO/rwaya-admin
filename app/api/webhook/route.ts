@@ -1,4 +1,3 @@
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import prismadb from "@/lib/prismadb";
 
@@ -20,22 +19,24 @@ export async function POST(req: Request) {
         return new NextResponse("Missing orderId", { status: 400 });
       }
 
+      // Generate a tracking ID, e.g. TRACK-XXXXXX (6 random uppercase letters/numbers)
+      const trackingId = `TRACK-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
       const updatedOrder = await prismadb.order.update({
         where: { id: orderId },
         data: {
           isPaid: true,
+          trackingId,  // assign the tracking ID here
         },
         include: {
-          orderItems: true
-        }
+          orderItems: true,
+        },
       });
 
-      console.log("✅ Order marked as paid:", updatedOrder.id);
-
+      console.log("✅ Order marked as paid with trackingId:", updatedOrder.id, trackingId);
     }
 
     return new NextResponse("Webhook received", { status: 200 });
-
   } catch (error) {
     console.error("❌ Webhook error:", error);
     return new NextResponse("Webhook failed", { status: 500 });

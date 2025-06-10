@@ -2,7 +2,7 @@ import Navbar from "@/components/navbar";
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-
+import NextTopLoader from 'nextjs-toploader';
 export default async function DashboardLayout({
     children,
     params
@@ -13,7 +13,7 @@ export default async function DashboardLayout({
    const { userId } = auth();
 
    if (!userId) {
-    redirect('/sign-in');
+    redirect('/');
    }
 
    const store = await prismadb.store.findFirst({
@@ -29,6 +29,12 @@ export default async function DashboardLayout({
 
    return (
     <>
+            <NextTopLoader
+              color="#3b82f6" // Default blue - change to match your theme
+              height={3}
+              showSpinner={false}
+              shadow="0 0 10px #3b82f6,0 0 5px #3b82f6"
+            />
     <Navbar />
     {children}
     </>

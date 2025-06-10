@@ -15,7 +15,7 @@ const SettingsPage: React.FC<SettingsPageProps> = async ({
         const { userId } = auth();
 
         if (!userId) {
-            redirect("/sign-in");
+            redirect("/");
         }
 
         const store = await prismadb.store.findFirst({

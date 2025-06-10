@@ -18,17 +18,16 @@ export async function POST(
   { params }: { params: { storeId: string } }
 ) {
   try {
-    const { items, customerEmail } = await req.json();
+    const { items, customerEmail, customerName, phone, address, county, idNumber } = await req.json();
 
-if (!items?.length) {
-  return new NextResponse(
-    JSON.stringify({ error: "Items are required" }),
-    { status: 400, headers: corsHeaders }
-  );
-}
+    if (!items?.length) {
+      return new NextResponse(
+        JSON.stringify({ error: "Items are required" }),
+        { status: 400, headers: corsHeaders }
+      );
+    }
 
-const productIds = items.map((item: any) => item.id);
-
+    const productIds = items.map((item: any) => item.id);
 
     // Validate inputs
     if (!params.storeId) {
@@ -70,24 +69,33 @@ const productIds = items.map((item: any) => item.id);
       const quantity = item?.quantity || 1;
       return total + product.price.toNumber() * quantity * 100;
     }, 0);
-    
 
     // Create order
-// Create order
-const order = await prismadb.order.create({
-  data: {
-    storeId: params.storeId,
-    customerEmail,
-    isPaid: false,
-    orderItems: {
-      create: items.map((item: any) => ({
-        product: { connect: { id: item.id } },
-        quantity: item.quantity || 1,
-      })),
-    }
-  }
-});
+    const order = await prismadb.order.create({
+      data: {
+        storeId: params.storeId,
+        customerEmail,
+        phone: phone || "",
+        address: address || "",
+        county: county || "",
+        customerName: customerName || "",
+        idNumber: idNumber || "",
+        isPaid: false,
+        orderItems: {
+          create: items.map((item: any) => ({
+            product: { connect: { id: item.id } },
+            quantity: item.quantity || 1,
+          })),
+        },
+      }
+    });
 
+    // 🔍 DEBUG: Log what was actually saved
+    console.log("=== ORDER CREATED ===");
+    console.log("Order ID:", order.id);
+    console.log("Saved customerName:", `"${order.customerName}"`);
+    console.log("Saved idNumber:", `"${order.idNumber}"`);
+    console.log("==================");
 
     // Initialize Paystack payment
     const paystackResponse = await paystack.initializeTransaction({

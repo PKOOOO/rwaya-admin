@@ -7,6 +7,8 @@ import "./globals.css";
 
 import type { Metadata } from "next";
 import { ToastProvider } from "@/providers/toast-provider";
+import NextTopLoader from 'nextjs-toploader';
+import { Header } from "@/components/Header";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -28,6 +30,13 @@ export default function RootLayout({
     <ClerkProvider>
     <html lang="en">
       <body className={roboto.className}>
+     
+      <NextTopLoader
+              color="#3b82f6" // Default blue - change to match your theme
+              height={3}
+              showSpinner={false}
+              shadow="0 0 10px #3b82f6,0 0 5px #3b82f6"
+            />
         <ToastProvider />
         <ModalProvider />
         {children}
