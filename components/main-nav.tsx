@@ -58,6 +58,11 @@ const params = useParams();
             label: 'Settings',
             active: pathname === `/${params.storeId}/settings`,
         },
+        {
+            href:`/${params.storeId}/tracker`,
+            label: 'Tracker',
+            active: pathname === `/${params.storeId}/tracker`,
+        },
     ];
     
     return (

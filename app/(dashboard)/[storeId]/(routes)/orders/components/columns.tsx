@@ -1,6 +1,10 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { Eye } from "lucide-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export type OrderColumn = {
   id: string;
@@ -14,9 +18,8 @@ export type OrderColumn = {
   products: string;
   createdAt: string;
   customerEmail: string;
-  trackingId: string | null; // <-- added
+  trackingId: string | null;
 };
-
 
 export const columns: ColumnDef<OrderColumn>[] = [
   {
@@ -76,7 +79,7 @@ export const columns: ColumnDef<OrderColumn>[] = [
           row.getValue("isPaid") ? "bg-green-600" : "bg-red-600"
         }`}
       >
-        {row.getValue("isPaid") ? "Paid" : "Unpaid"}
+        {row.getValue("isPaid") ? "Paid" : "Pending"}
       </span>
     ),
   },
@@ -92,6 +95,36 @@ export const columns: ColumnDef<OrderColumn>[] = [
       );
     },
   },
-  
+  {
+    accessorKey: "createdAt",
+    header: "Date",
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const order = row.original;
+      
+      return (
+        <div className="flex items-center justify-center">
+          <ViewTrackingButton orderId={order.id} />
+        </div>
+      );
+    },
+  },
 ];
 
+// Separate component to handle the navigation
+function ViewTrackingButton({ orderId }: { orderId: string }) {
+  const params = useParams();
+  const storeId = params.storeId as string;
+
+  return (
+    <Link href={`/${storeId}/orders/${orderId}`}>
+      <Button variant="outline" size="sm" className="h-8">
+        <Eye className="h-3 w-3 mr-1" />
+        Track
+      </Button>
+    </Link>
+  );
+}

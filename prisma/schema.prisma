@@ -135,6 +135,7 @@ model Image {
   @@index([productId])
 }
 
+
 model Order {
   id             String          @id @default(uuid())
   storeId        String
@@ -144,10 +145,11 @@ model Order {
   phone          String          @default("")
   address        String          @default("")
   customerName   String          @default("")
-  idNumber       String           @default("")
+  idNumber       String          @default("")
   county         String          @default("")
   customerEmail  String?
   trackingId     String?         @unique
+  deliveryStatus String          @default("ORDER_RECEIVED") // Add this line
   trackingUpdates TrackingUpdate[]
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
@@ -161,11 +163,11 @@ model TrackingUpdate {
   order     Order    @relation(fields: [orderId], references: [id])
   status    String   // e.g. "Order Received", "Packed", "Out for Delivery"
   note      String?  // optional extra note
+  location  String?  // Add this line for location tracking
   timestamp DateTime @default(now())
 
   @@index([orderId])
 }
-
 
 model OrderItem {
     id String @id @default(uuid())
@@ -178,3 +180,4 @@ model OrderItem {
     @@index([orderId])
     @@index([productId])
 }
+
