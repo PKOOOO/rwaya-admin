@@ -19,8 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-
+import { usePathname } from "next/navigation";
 
 const formSchema = z.object({
     name: z.string().min(1),
@@ -28,8 +27,11 @@ const formSchema = z.object({
 
 export const StoreModal = () => {
     const storeModal = useStoreModal();
-
+    const pathname = usePathname();
     const [loading, setLoading] = useState(false);
+
+    // Check if we're on the post-sign-in page (user must create a store)
+    const isFirstStore = pathname === '/post-sign-in';
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -52,12 +54,19 @@ export const StoreModal = () => {
         }
     }
 
+    const handleClose = () => {
+        // Don't allow closing if this is their first store
+        if (!isFirstStore) {
+            storeModal.onClose();
+        }
+    }
+
     return (
     <Modal
     title="Create Store"
     description="Add a new store to manage products and categories"
     isOpen={storeModal.isOpen}
-    onClose={storeModal.onClose}
+    onClose={handleClose}
     >
         <div>
             <div className="space-y-4 py-2 pb-4">
@@ -81,11 +90,13 @@ export const StoreModal = () => {
                         )}
                         />
                         <div className="pt-6 space-x-2 flex items-center justify-end w-full">
-                            <Button
-                            disabled={loading} 
-                            variant="outline"
-                            onClick={storeModal.onClose}>
-                            Cancel</Button>
+                            {!isFirstStore && (
+                                <Button
+                                disabled={loading} 
+                                variant="outline"
+                                onClick={handleClose}>
+                                Cancel</Button>
+                            )}
                             <Button disabled={loading} type="submit">Continue</Button>
                         </div>
                     </form>
