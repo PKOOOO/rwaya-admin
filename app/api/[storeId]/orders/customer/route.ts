@@ -1,23 +1,29 @@
+// app/api/[storeId]/orders/customer/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import prismadb from "@/lib/prismadb";
+import  prismadb from "@/lib/prismadb"; // Adjust the import path based on your setup
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { storeId: string; orderId: string } }
+  { params }: { params: { storeId: string } }
 ) {
   try {
+    const { searchParams } = new URL(req.url);
+    const email = searchParams.get("email");
+
+    // Validate required parameters
     if (!params.storeId) {
       return new NextResponse("Store ID is required", { status: 400 });
     }
 
-    if (!params.orderId) {
-      return new NextResponse("Order ID is required", { status: 400 });
+    if (!email) {
+      return new NextResponse("Email is required", { status: 400 });
     }
 
-    const order = await prismadb.order.findUnique({
+    // Fetch orders for the customer with the specified email
+    const orders = await prismadb.order.findMany({
       where: {
-        id: params.orderId,
         storeId: params.storeId,
+        customerEmail: email,
       },
       include: {
         orderItems: {
@@ -35,13 +41,18 @@ export async function GET(
           },
         },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
-    if (!order) {
-      return new NextResponse("Order not found", { status: 404 });
+    // Check if any orders were found
+    if (orders.length === 0) {
+      return new NextResponse("No orders found for this customer", { status: 404 });
     }
 
-    const transformedOrder = {
+    // Transform the data to match your frontend interface
+    const transformedOrders = orders.map(order => ({
       id: order.id,
       customerName: order.customerName,
       phone: order.phone,
@@ -70,11 +81,11 @@ export async function GET(
         note: update.note,
         timestamp: update.timestamp,
       })),
-    };
+    }));
 
-    return NextResponse.json(transformedOrder);
+    return NextResponse.json(transformedOrders);
   } catch (error) {
-    console.error("[ORDER_BY_ID_GET]", error);
+    console.error("[CUSTOMER_ORDERS_GET]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 }

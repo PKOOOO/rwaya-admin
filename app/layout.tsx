@@ -34,8 +34,8 @@ export default function RootLayout({
       <NextTopLoader
               color="#3b82f6" // Default blue - change to match your theme
               height={3}
-              showSpinner={false}
-              shadow="0 0 10px #3b82f6,0 0 5px #3b82f6"
+              showSpinner={true}
+              
             />
         <ToastProvider />
         <ModalProvider />
