@@ -3,6 +3,9 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import NextTopLoader from 'nextjs-toploader';
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+
 export default async function DashboardLayout({
     children,
     params
@@ -27,16 +30,29 @@ export default async function DashboardLayout({
     redirect('/');
    }
 
+   const stores = await prismadb.store.findMany({
+    where: {
+        userId,
+    },
+   });
+
    return (
     <>
-            <NextTopLoader
-              color="#3b82f6" // Default blue - change to match your theme
-              height={3}
-              showSpinner={false}
-              shadow="0 0 10px #3b82f6,0 0 5px #3b82f6"
-            />
-    <Navbar />
-    {children}
+        <NextTopLoader
+          color="#3b82f6"
+          height={3}
+          showSpinner={false}
+          shadow="0 0 10px #3b82f6,0 0 5px #3b82f6"
+        />
+        <SidebarProvider>
+          <AppSidebar stores={stores} />
+          <div className="flex-1">
+            <Navbar />
+            <main className="p-6">
+              {children}
+            </main>
+          </div>
+        </SidebarProvider>
     </>
    );
 };
