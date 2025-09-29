@@ -1,7 +1,7 @@
 "use client";
 import * as z from "zod";
 import { Billboard, Category, Icon } from "@prisma/client";
-import { IconPreview } from "@/app/(dashboard)/[storeId]/(routes)/icons/[iconId]/components/icon-form";
+import { IconPreview } from "@/components/ui/icon-preview";
 import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
