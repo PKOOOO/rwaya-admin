@@ -13,6 +13,12 @@ const IconsPage = async ({
         where: {
             storeId: params.storeId
         },
+        select: {
+            id: true,
+            name: true,
+            iconvalue: true,
+            createdAt: true
+        },
         orderBy: {
             createdAt: 'desc'
         }

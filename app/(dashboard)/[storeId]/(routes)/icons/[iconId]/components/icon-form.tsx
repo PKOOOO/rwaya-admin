@@ -23,16 +23,8 @@ import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import { AlertModal } from "@/components/modals/alert-modal";
 import { Icon } from "@prisma/client";
-import * as FaIcons from "react-icons/fa";
-import * as PiIcons from "react-icons/pi";
-import * as GiIcons from "react-icons/gi";
-import * as RiIcons from "react-icons/ri";
-import * as MdIcons from "react-icons/md";
-import * as IoIcons from "react-icons/io";
-import * as Io3Icons from "react-icons/io5";
-
-// Combine all icon libraries
-const iconLibraries = { ...FaIcons, ...RiIcons, ...PiIcons, ...MdIcons, ...IoIcons, ...Io3Icons, ...GiIcons };
+// Import optimized icon components
+import { IconPreview, useFilteredIcons } from "@/components/ui/icon-preview";
 
 const formSchema = z.object({
   name: z.string().min(1),
@@ -46,18 +38,6 @@ interface IconFormProps {
   initialData: Icon | null;
 }
 
-// Icon Preview Component
-export const IconPreview = ({ iconName }: { iconName: string }) => {
-  const IconComponent = iconLibraries[iconName as keyof typeof iconLibraries];
-
-  if (!IconComponent) {
-    return <span className="text-gray-500">Invalid Icon</span>;
-  }
-
-  return <IconComponent className="h-6 w-6" />;
-};
-
-
 export const IconForm: React.FC<IconFormProps> = ({ initialData }) => {
   const params = useParams();
   const router = useRouter();
@@ -65,11 +45,8 @@ export const IconForm: React.FC<IconFormProps> = ({ initialData }) => {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
 
-  // Get all icon names across imported libraries
-  const allIcons = Object.keys(iconLibraries);
-  const filteredIcons = allIcons.filter((icon) =>
-    icon.toLowerCase().includes(search.toLowerCase())
-  );
+  // Use optimized hook for filtered icons
+  const filteredIcons = useFilteredIcons(search);
 
   const title = initialData ? "Edit Icon" : "Create Icon";
   const description = initialData ? "Edit the icon" : "Add a new icon";

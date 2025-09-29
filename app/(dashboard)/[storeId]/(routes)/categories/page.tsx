@@ -12,9 +12,21 @@ const CategoriesPage = async ({
         where: {
             storeId: params.storeId
         },
-        include: {
-            billboard: true,
-            icon: true // Assuming there's a relation to an `icon` model
+        select: {
+            id: true,
+            name: true,
+            iconId: true,
+            createdAt: true,
+            billboard: {
+                select: {
+                    label: true
+                }
+            },
+            icon: {
+                select: {
+                    iconvalue: true
+                }
+            }
         },
         orderBy: {
             createdAt: 'desc'

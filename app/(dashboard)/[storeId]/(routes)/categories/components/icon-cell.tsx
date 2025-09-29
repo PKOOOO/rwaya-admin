@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { IconPreview } from "@/app/(dashboard)/[storeId]/(routes)/icons/[iconId]/components/icon-form";
+import { IconPreview } from "@/components/ui/icon-preview";
 
 interface IconCellProps {
   iconValue: string;

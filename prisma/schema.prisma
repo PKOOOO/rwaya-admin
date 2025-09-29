@@ -6,9 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Store {
@@ -18,10 +17,10 @@ model Store {
   billboard  Billboard[] @relation("StoreToBillboard")
   categories Category[]  @relation("StoreToCategory")
   sizes      Size[]      @relation("StoreToSize")
-  colors     Color[]      @relation("StoreToColor")
-  icons      Icon[]       @relation("StoreToIcon")
-  products   Product[]    @relation("StoreToProduct")
-  orders     Order[]      @relation("StoreToOrder")
+  colors     Color[]     @relation("StoreToColor")
+  icons      Icon[]      @relation("StoreToIcon")
+  products   Product[]   @relation("StoreToProduct")
+  orders     Order[]     @relation("StoreToOrder")
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 }
@@ -48,8 +47,8 @@ model Category {
   products    Product[] @relation("CategoryToProduct")
   name        String
   iconId      String
-  icon Icon @relation(fields: [iconId], references: [id])
-  iconvalue String
+  icon        Icon      @relation(fields: [iconId], references: [id])
+  iconvalue   String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -60,63 +59,62 @@ model Category {
 }
 
 model Size {
-  id String @id @default(uuid())
-  storeId     String
-  store      Store     @relation("StoreToSize", fields: [storeId], references: [id])
-  name       String
+  id        String    @id @default(uuid())
+  storeId   String
+  store     Store     @relation("StoreToSize", fields: [storeId], references: [id])
+  name      String
   value     String
-  products Product[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([storeId])
 }
 
 model Color {
-  id String @id @default(uuid())
-  storeId     String
-  store      Store     @relation("StoreToColor", fields: [storeId], references: [id])
-  name       String
+  id        String    @id @default(uuid())
+  storeId   String
+  store     Store     @relation("StoreToColor", fields: [storeId], references: [id])
+  name      String
   value     String
-  products Product[]
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([storeId])
+}
+
+model Icon {
+  id         String     @id @default(uuid())
+  storeId    String
+  store      Store      @relation("StoreToIcon", fields: [storeId], references: [id])
+  name       String
+  iconvalue  String
+  categories Category[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
 
   @@index([storeId])
 }
 
-model Icon {
-  id        String   @id @default(uuid())
-  storeId   String
-  store     Store    @relation("StoreToIcon", fields: [storeId], references: [id])
-  name      String
-  iconvalue String
-  categories Category[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([storeId])
-}
-
-
 model Product {
-  id String @id @default(uuid())
-  storeId String
-  store Store @relation("StoreToProduct", fields: [storeId], references: [id])
+  id         String      @id @default(uuid())
+  storeId    String
+  store      Store       @relation("StoreToProduct", fields: [storeId], references: [id])
   categoryId String
-  category Category @relation("CategoryToProduct", fields: [categoryId], references: [id])
-  name String
-  price Decimal
-  isFeatured Boolean @default(false)
-  isArchived Boolean @default(false)
-  sizeId String
-  size Size @relation(fields: [sizeId], references: [id])
-  colorId String
-  color Color @relation(fields: [colorId], references: [id])
-  images Image[]
+  category   Category    @relation("CategoryToProduct", fields: [categoryId], references: [id])
+  name       String
+  price      Decimal
+  isFeatured Boolean     @default(false)
+  isArchived Boolean     @default(false)
+  sizeId     String
+  size       Size        @relation(fields: [sizeId], references: [id])
+  colorId    String
+  color      Color       @relation(fields: [colorId], references: [id])
+  images     Image[]
   orderItems OrderItem[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
   @@index([storeId])
   @@index([categoryId])
@@ -125,34 +123,33 @@ model Product {
 }
 
 model Image {
-  id String @id @default(uuid())
+  id        String   @id @default(uuid())
   productId String
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  url String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
   createdAt DateTime @default(now())
   updatedat DateTime @updatedAt
 
   @@index([productId])
 }
 
-
 model Order {
-  id             String          @id @default(uuid())
-  storeId        String
-  store          Store           @relation("StoreToOrder", fields: [storeId], references: [id])
-  orderItems     OrderItem[]
-  isPaid         Boolean         @default(false)
-  phone          String          @default("")
-  address        String          @default("")
-  customerName   String          @default("")
-  idNumber       String          @default("")
-  county         String          @default("")
-  customerEmail  String?
-  trackingId     String?         @unique
-  deliveryStatus String          @default("ORDER_RECEIVED") // Add this line
+  id              String           @id @default(uuid())
+  storeId         String
+  store           Store            @relation("StoreToOrder", fields: [storeId], references: [id])
+  orderItems      OrderItem[]
+  isPaid          Boolean          @default(false)
+  phone           String           @default("")
+  address         String           @default("")
+  customerName    String           @default("")
+  idNumber        String           @default("")
+  county          String           @default("")
+  customerEmail   String?
+  trackingId      String?          @unique
+  deliveryStatus  String           @default("ORDER_RECEIVED")
   trackingUpdates TrackingUpdate[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   @@index([storeId])
 }
@@ -161,23 +158,22 @@ model TrackingUpdate {
   id        String   @id @default(uuid())
   orderId   String
   order     Order    @relation(fields: [orderId], references: [id])
-  status    String   // e.g. "Order Received", "Packed", "Out for Delivery"
-  note      String?  // optional extra note
-  location  String?  // Add this line for location tracking
+  status    String
+  note      String?
+  location  String?
   timestamp DateTime @default(now())
 
   @@index([orderId])
 }
 
 model OrderItem {
-    id String @id @default(uuid())
-    orderId String
-    order Order @relation(fields: [orderId], references: [id])
-    productId String
-    product Product @relation(fields: [productId], references: [id])
-    quantity  Int      @default(1)
+  id        String  @id @default(uuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @default(1)
 
-    @@index([orderId])
-    @@index([productId])
+  @@index([orderId])
+  @@index([productId])
 }
-

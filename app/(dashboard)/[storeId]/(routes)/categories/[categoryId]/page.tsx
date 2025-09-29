@@ -19,9 +19,22 @@ const CategoryPage = async ({
     where: {
       storeId: params.storeId,
     },
+    select: {
+      id: true,
+      label: true
+    }
   });
 
-  const icons = await prismadb.icon.findMany(); // Fetch icons
+  const icons = await prismadb.icon.findMany({
+    where: {
+      storeId: params.storeId
+    },
+    select: {
+      id: true,
+      name: true,
+      iconvalue: true
+    }
+  }); // Fetch only store-specific icons
 
   return (
     <div className="flex-col">

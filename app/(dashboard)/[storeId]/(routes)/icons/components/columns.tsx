@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
-import { IconPreview } from "../[iconId]/components/icon-form"; // Import your IconPreview component
+import { IconPreview } from "@/components/ui/icon-preview"; // Import optimized IconPreview component
 
 
 export type IconColumn = {
