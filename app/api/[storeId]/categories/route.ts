@@ -11,7 +11,7 @@ export async function POST(
         const { userId } = auth();
         const body = await req.json();
 
-        const { name, billboardId, iconId, iconvalue } = body;
+        const { name, billboardId, iconId } = body;
 
         if (!userId) {
             return new NextResponse("Unauthenticated", { status: 401 });
@@ -25,9 +25,6 @@ export async function POST(
             return new NextResponse("BillboardId is required is required", { status: 400 });
         }
         if(!iconId) {
-            return new NextResponse("BillboardId is required is required", { status: 400 });
-        }
-        if(!iconvalue) {
             return new NextResponse("BillboardId is required is required", { status: 400 });
         }
         if (!params.storeId) {
@@ -50,7 +47,6 @@ export async function POST(
                 name,
                 billboardId,
                 iconId,
-                iconvalue: String(iconvalue),
                 storeId: params.storeId
             }
         });
@@ -79,6 +75,13 @@ export async function GET(
             where: {
                 storeId: params.storeId,
             },
+            include: {
+                icon: {
+                    select: {
+                        imageUrl: true
+                    }
+                }
+            }
         });
 
         return NextResponse.json(categories);

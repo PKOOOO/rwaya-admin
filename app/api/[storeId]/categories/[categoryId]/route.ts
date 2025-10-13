@@ -36,7 +36,7 @@ export async function PATCH(
     const { userId } = auth();
     const body = await req.json();
 
-    const { name, billboardId, iconId, iconvalue } = body;
+    const { name, billboardId, iconId } = body;
 
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
@@ -54,9 +54,6 @@ export async function PATCH(
       return new NextResponse("iconId is required", { status: 400 });
     }
 
-    if (!iconvalue) {
-      return new NextResponse("iconId is required", { status: 400 });
-    }
 
     if (!params.categoryId) {
       return new NextResponse("Category Id required", { status: 400 });
@@ -81,7 +78,6 @@ export async function PATCH(
         name,
         billboardId,
         iconId,
-        iconvalue: String(iconvalue),
       },
     });
 

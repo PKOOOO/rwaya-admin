@@ -1,7 +1,7 @@
 "use client";
 import * as z from "zod";
 import { Billboard, Category, Icon } from "@prisma/client";
-import { IconPreview } from "@/components/ui/icon-preview";
+import { ImageIcon } from "@/components/ui/image-icon";
 import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -65,7 +65,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboa
     try {
       setLoading(true);
       
-      // Find the selected icon to get its iconvalue
+      // Validate that the selected icon exists
       const selectedIcon = icons.find((icon) => icon.id === data.iconId);
       
       if (!selectedIcon) {
@@ -73,11 +73,8 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboa
         return;
       }
   
-      // Add iconvalue to the data before sending
-      const categoryData = { 
-        ...data, 
-        iconvalue: selectedIcon.iconvalue 
-      };
+      // Use the data as is (no need to add iconvalue anymore)
+      const categoryData = data;
       
       if (initialData) {
         await axios.patch(
@@ -208,7 +205,7 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, billboa
                       {icons.map((icon) => (
                         <SelectItem key={icon.id} value={icon.id}>
                           <div className="flex items-center gap-2">
-                            <IconPreview iconName={icon.iconvalue} />
+                            <ImageIcon imageUrl={icon.imageUrl} className="h-4 w-4" />
                             {icon.name}
                           </div>
                         </SelectItem>

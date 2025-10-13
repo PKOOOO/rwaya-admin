@@ -16,7 +16,7 @@ const IconsPage = async ({
         select: {
             id: true,
             name: true,
-            iconvalue: true,
+            imageUrl: true,
             createdAt: true
         },
         orderBy: {
@@ -27,7 +27,7 @@ const IconsPage = async ({
     const formattedIcons: IconColumn[] = icons.map((item) => ({
         id: item.id,
         name: item.name,
-        iconvalue: item.iconvalue,
+        imageUrl: item.imageUrl,
         createdAt: format(item.createdAt, "MMMM do, yyyy")
     }))
 

@@ -1,16 +1,16 @@
 "use client";
 
 import React from "react";
-import { IconPreview } from "@/components/ui/icon-preview";
+import { ImageIcon } from "@/components/ui/image-icon";
 
 interface IconCellProps {
-  iconValue: string;
+  iconImageUrl: string;
 }
 
-export const IconCell: React.FC<IconCellProps> = ({ iconValue }) => {
+export const IconCell: React.FC<IconCellProps> = ({ iconImageUrl }) => {
   return (
     <div className="flex items-center gap-x-2">
-      <IconPreview iconName={iconValue} />
+      <ImageIcon imageUrl={iconImageUrl} className="h-6 w-6" />
     </div>
   );
 };

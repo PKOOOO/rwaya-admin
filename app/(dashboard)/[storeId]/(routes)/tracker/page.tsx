@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Package, MapPin, Clock, User, Phone, Mail, CreditCard } from "lucide-react";
+import Image from "next/image";
 import { format } from "date-fns";
 import { toast } from "react-hot-toast";
 import { Decimal } from "@prisma/client/runtime/library";
@@ -217,9 +218,11 @@ const AdminTracking = ({ order, storeId }: AdminTrackingProps) => {
             {order.orderItems.map((item) => (
               <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg">
                 {item.product.images[0] && (
-                  <img
+                  <Image
                     src={item.product.images[0].url}
                     alt={item.product.name}
+                    width={64}
+                    height={64}
                     className="w-16 h-16 object-cover rounded"
                   />
                 )}

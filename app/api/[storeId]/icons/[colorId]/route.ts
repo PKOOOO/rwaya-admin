@@ -35,7 +35,7 @@ export async function PATCH (
         const { userId } = auth();
         const body = await req.json();
 
-        const { name, iconvalue } = body;
+        const { name, imageUrl } = body;
 
         if (!userId) {
             return new NextResponse("Unauthenticated", { status: 401 });
@@ -45,8 +45,8 @@ export async function PATCH (
             return new NextResponse("Name is required", { status: 400 });
         }
 
-        if (!iconvalue) {
-            return new NextResponse("Value URL is required", { status: 400 });
+        if (!imageUrl) {
+            return new NextResponse("Icon image URL is required", { status: 400 });
         }
 
         if (!params.iconId) {
@@ -70,7 +70,7 @@ export async function PATCH (
             },
             data: {
                 name,
-                iconvalue
+                imageUrl
             }
         });
 

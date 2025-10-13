@@ -24,7 +24,7 @@ const CategoriesPage = async ({
             },
             icon: {
                 select: {
-                    iconvalue: true
+                    imageUrl: true
                 }
             }
         },
@@ -39,7 +39,7 @@ const CategoriesPage = async ({
         name: item.name,
         billboardLabel: item.billboard?.label ?? "No label",
         iconId: item.iconId,
-        iconValue: item.icon?.iconvalue ?? "default-icon", // Include actual icon value
+        iconImageUrl: item.icon?.imageUrl ?? "", // Use imageUrl instead of iconvalue
         createdAt: format(item.createdAt, "MMMM do, yyyy")
     }));
     

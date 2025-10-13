@@ -22,7 +22,7 @@ export const PostSignInClient = () => {
     <div className="flex items-center justify-center min-h-screen">
       <div className="text-center">
         <h1 className="text-2xl font-semibold mb-4">Welcome!</h1>
-        <p className="text-muted-foreground">Let's create your first store to get started.</p>
+        <p className="text-muted-foreground">Let&apos;s create your first store to get started.</p>
       </div>
       <StoreModal />
     </div>

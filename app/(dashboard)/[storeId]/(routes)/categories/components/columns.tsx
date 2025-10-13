@@ -9,7 +9,7 @@ export type CategoryColumn = {
   name: string;
   billboardLabel: string;
   iconId: string;
-  iconValue: string; // Add this field
+  iconImageUrl: string; // Changed from iconValue to iconImageUrl
   createdAt: string;
 };
 
@@ -25,9 +25,9 @@ export const columns: ColumnDef<CategoryColumn>[] = [
     cell: ({ row }) => row.original.billboardLabel,
   },
   {
-    accessorKey: "iconValue",
+    accessorKey: "iconImageUrl",
     header: "Icon",
-    cell: ({ row }) => <IconCell iconValue={row.original.iconValue} />,
+    cell: ({ row }) => <IconCell iconImageUrl={row.original.iconImageUrl} />,
   },
   
   {

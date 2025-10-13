@@ -11,7 +11,7 @@ export async function POST(
         const { userId } = auth();
         const body = await req.json();
 
-        const { name, iconvalue } = body;
+        const { name, imageUrl } = body;
 
         if (!userId) {
             return new NextResponse("Unauthenticated", { status: 401 });
@@ -21,8 +21,8 @@ export async function POST(
             return new NextResponse("Name is required is required", { status: 400 });
         }
 
-        if(!iconvalue) {
-            return new NextResponse("Value icon is required is required", { status: 400 });
+        if(!imageUrl) {
+            return new NextResponse("Icon image is required", { status: 400 });
         }
 
         if (!params.storeId) {
@@ -43,7 +43,7 @@ export async function POST(
         const icon = await prismadb.icon.create({
             data: {
                 name,
-                iconvalue,
+                imageUrl,
                 storeId: params.storeId
             }
         });

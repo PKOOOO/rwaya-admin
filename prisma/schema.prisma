@@ -48,14 +48,12 @@ model Category {
   name        String
   iconId      String
   icon        Icon      @relation(fields: [iconId], references: [id])
-  iconvalue   String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
   @@index([storeId])
   @@index([billboardId])
   @@index([iconId])
-  @@index([iconvalue])
 }
 
 model Size {
@@ -89,7 +87,7 @@ model Icon {
   storeId    String
   store      Store      @relation("StoreToIcon", fields: [storeId], references: [id])
   name       String
-  iconvalue  String
+  imageUrl   String     @default("")
   categories Category[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt

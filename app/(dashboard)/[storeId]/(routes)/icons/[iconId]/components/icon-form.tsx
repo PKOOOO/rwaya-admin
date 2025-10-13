@@ -23,12 +23,12 @@ import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import { AlertModal } from "@/components/modals/alert-modal";
 import { Icon } from "@prisma/client";
-// Import optimized icon components
-import { IconPreview, useFilteredIcons } from "@/components/ui/icon-preview";
+import IconUpload from "@/components/ui/icon-upload";
+import { ImageIcon } from "@/components/ui/image-icon";
 
 const formSchema = z.object({
   name: z.string().min(1),
-  iconvalue: z.string().min(1, { message: "Enter a valid icon name" }), // Should be a string like "FaHome"
+  imageUrl: z.string().min(1, { message: "Please upload an icon image" }),
 });
 
 
@@ -43,10 +43,6 @@ export const IconForm: React.FC<IconFormProps> = ({ initialData }) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState("");
-
-  // Use optimized hook for filtered icons
-  const filteredIcons = useFilteredIcons(search);
 
   const title = initialData ? "Edit Icon" : "Create Icon";
   const description = initialData ? "Edit the icon" : "Add a new icon";
@@ -57,7 +53,7 @@ export const IconForm: React.FC<IconFormProps> = ({ initialData }) => {
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       name: "",
-      iconvalue: "",
+      imageUrl: "",
     },
   });
 
@@ -129,39 +125,16 @@ export const IconForm: React.FC<IconFormProps> = ({ initialData }) => {
             />
             <FormField
               control={form.control}
-              name="iconvalue"
+              name="imageUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Icon</FormLabel>
+                  <FormLabel>Icon Image</FormLabel>
                   <FormControl>
-                    <div className="flex flex-col gap-4">
-                      <Input
-                        disabled={loading}
-                        placeholder="Enter icon name"
-                        {...field}
-                        onChange={(e) => {
-                          field.onChange(e.target.value);
-                          setSearch(e.target.value);
-                        }}
-                      />
-                      <div className="p-2 border rounded-md">
-                        <IconPreview iconName={field.value} />
-                      </div>
-                      <div className="max-h-40 overflow-y-auto border p-2 rounded-md">
-                        {filteredIcons.slice(0, 10).map((icon) => (
-                          <div
-                            key={icon}
-                            className="cursor-pointer hover:bg-gray-200 p-1 rounded"
-                            onClick={() => {
-                              field.onChange(icon);
-                              setSearch("");
-                            }}
-                          >
-                            {icon}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    <IconUpload
+                      value={field.value}
+                      disabled={loading}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
