@@ -24,9 +24,6 @@ export default async function SetupLayout({
         redirect(`/${store.id}`);
     }
 
-    return (
-        <>
-        {children}
-        </>
-    );
+    // If no store exists, redirect to main page where store modal will be handled
+    redirect('/');
 };
