@@ -78,7 +78,7 @@ const nextConfig = {
                     // CORS headers
                     {
                         key: "Access-Control-Allow-Origin",
-                        value: process.env.FRONTEND_STORE_URL || "http://192.168.13.163:3001",
+                        value: process.env.FRONTEND_STORE_URL || "https://rwaya-admin.vercel.app",
                     },
                     {
                         key: "Access-Control-Allow-Methods",
