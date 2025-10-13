@@ -1,7 +1,8 @@
-import { SetupPageClient } from "@/components/setup-page-client";
+import { redirect } from "next/navigation";
 
 const SetupPage = () => {
-  return <SetupPageClient />;
+  // This page should redirect to the main page where the store modal will be handled
+  redirect('/');
 };
 
 export default SetupPage;
